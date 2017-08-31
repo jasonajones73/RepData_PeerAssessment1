@@ -7,16 +7,45 @@ output:
 
 
 ## Loading and preprocessing the data
+After cloning the repository, I manually unzipped the data file to bypass temp storage and unzip. To load the data from that point I make a simple read_csv() call using the readr package.
 
+```{r echo=TRUE}
+library(tidyverse)
+x <- read_csv("data/activity.csv")
+```
 
 
 ## What is mean total number of steps taken per day?
+Aggregate steps by day and create a histogram from the new object.
 
+```{r echo=TRUE}
+x2 <- aggregate(x$steps, list(Date=x$date), FUN=sum, na.rm = TRUE)
+colnames(x2) <- c("date", "steps")
+hist(x2$steps, freq = TRUE, main = "Histogram for Daily Steps", xlab = "Total Steps")
+```
 
+```{r echo=TRUE}
+mean.steps <- round(mean(x2$steps), digits = 0)
+median.steps <- round(median(x2$steps))
+```
+
+Mean steps per day is 9,354 and median steps per day is 10,395.
 
 ## What is the average daily activity pattern?
+Aggregate the average number of steps by interval and plot it as a time series.
 
+```{r echo=TRUE}
+mean.interval <- aggregate(x$steps, by=list(interval=x$interval), FUN=mean, na.rm = TRUE)
+colnames(mean.interval) <- c("interval", "steps")
+plot(mean.interval$interval, mean.interval$steps, type="l", xlab="Interval", ylab="Mean Number of Steps", main="Average Daily Activity")
+```
 
+```{r echo=TRUE}
+index <- which.max(mean.interval$steps)
+max.interval <- mean.interval$interval[index]
+```
+
+The interval containing the maximum number of steps, on average, is interval 835.
 
 ## Imputing missing values
 
